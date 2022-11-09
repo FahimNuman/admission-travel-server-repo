@@ -61,8 +61,24 @@ async function run(){
             res.send(reviews);
         });
 
+        app.post('/reviews', async (req, res) => {
+            const review = req.body;
+            const result = await orderCollection.insertOne(review);
+            res.send(result);
+        });
 
-
+        app.patch('/reviews/:id', async (req, res) => {
+            const id = req.params.id;
+            const status = req.body.status
+            const query = { _id: ObjectId(id) }
+            const updatedDoc = {
+                $set: {
+                    status: status
+                }
+            }
+            const result = await reviewCollection.updateOne(query, updatedDoc);
+            res.send(result);
+        })
 
 
     }
