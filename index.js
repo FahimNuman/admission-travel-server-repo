@@ -19,7 +19,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run(){
     try{
         const serviceCollection = client.db('admissiontravel').collection('service');
-        const reviewCollection = client.db('admissiontravel').collection('reviews');
+        const reviewCollection = client.db('admissiontravel').collection('review');
 
         app.get('/service',async (req,res)=>{
             const query ={};
@@ -47,45 +47,31 @@ async function run(){
         });
         
         //Review part
+        app.post('/review', async (req, res) => {
+            const addreview = req.body;
+            const result = await reviewCollection.insertOne(addreview);
+            res.send(result);
+        });
+
+        app.get('/review', async (req, res) => {
+            const query = {};
+            cursor = reviewCollection.find(query);
+            const review = await cursor.toArray();
+            res.send(review);
+        })
         app.get('/reviews', async (req, res) => {
             let query = {};
-
-            if (req.query.email) {
+              console.log(req.query.id)
+            if (req.query.id) {
                 query = {
-                    email: req.query.email
+                    serviceID: req.query.id
                 }
             }
 
             const cursor = reviewCollection.find(query);
-            const reviews = await cursor.toArray();
-            res.send(reviews);
+            const review = await cursor.toArray();
+            res.send(review);
         });
-
-        app.post('/reviews', async (req, res) => {
-            const review = req.body;
-            const result = await orderCollection.insertOne(review);
-            res.send(result);
-        });
-
-        app.patch('/reviews/:id', async (req, res) => {
-            const id = req.params.id;
-            const status = req.body.status
-            const query = { _id: ObjectId(id) }
-            const updatedDoc = {
-                $set: {
-                    status: status
-                }
-            }
-            const result = await reviewCollection.updateOne(query, updatedDoc);
-            res.send(result);
-        })
-        app.delete('/reviews/:id', async (req, res) => {
-            const id = req.params.id;
-            const query = { _id: ObjectId(id) };
-            const result = await orderCollection.deleteOne(query);
-            res.send(result);
-        })
-
     }
     finally {
 
