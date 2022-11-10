@@ -21,6 +21,10 @@ async function run(){
         const serviceCollection = client.db('admissiontravel').collection('service');
         const reviewCollection = client.db('admissiontravel').collection('review');
 
+        app.get('/', (req, res) => {
+            res.send('Admission Travel server');
+        });
+        
         app.get('/service',async (req,res)=>{
             const query ={};
             cursor = serviceCollection.find(query);
@@ -124,10 +128,8 @@ async function run(){
 }
 run().catch(err=>console.log(err));
 
-app.get('/', (req, res) => {
-    res.send('Admission Travel server');
-});
+
 
 app.listen(port, () => {
-    console.log(`Admission travel Running on the port  ${port}`);
+    console.log('Admission travel Running on the port',  port);
 })
